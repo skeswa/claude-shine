@@ -23,6 +23,10 @@ It sits in your menu bar, watches for appearance changes, and updates
 `~/.claude/settings.json` instantly. No polling, no CPU usage when idle, no
 config — just install and forget.
 
+<div align="center">
+<img src="screenshot.png" width="400" alt="Claude Shine in the macOS menu bar" />
+</div>
+
 ## Features
 
 - **Instant sync** — theme updates the moment macOS appearance changes
