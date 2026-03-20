@@ -1,21 +1,22 @@
 import Foundation
 
 struct ClaudeSettingsManager {
-    private static var settingsDirectoryURL: URL {
-        FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent(".claude")
-    }
+    let settingsDirectoryURL: URL
 
-    private static var settingsFileURL: URL {
+    var settingsFileURL: URL {
         settingsDirectoryURL.appendingPathComponent("settings.json")
     }
 
-    static func applyTheme(_ theme: Theme) {
+    init(settingsDirectoryURL: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".claude")) {
+        self.settingsDirectoryURL = settingsDirectoryURL
+    }
+
+    func applyTheme(_ theme: Theme) {
         let fileManager = FileManager.default
         let dirURL = settingsDirectoryURL
         let fileURL = settingsFileURL
 
-        // Ensure ~/.claude/ exists.
+        // Ensure directory exists.
         if !fileManager.fileExists(atPath: dirURL.path) {
             do {
                 try fileManager.createDirectory(

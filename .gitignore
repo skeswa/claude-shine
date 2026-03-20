@@ -1,5 +1,19 @@
+# Build artifacts
 build/
-*.xcuserdata
+.build/
 DerivedData/
-.DS_Store
+Derived/
+
+# Tuist-generated (regenerated via `mise run generate`)
+*.xcodeproj
+*.xcworkspace
+
+# Xcode user data
+*.xcuserdata
 xcuserdata/
+
+# Tuist cache
+.tuist/
+
+# System
+.DS_Store

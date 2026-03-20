@@ -4,6 +4,11 @@ A lightweight macOS menu bar utility that automatically syncs [Claude Code](http
 
 When you toggle between light and dark mode on macOS, Claude Shine updates `~/.claude/settings.json` so Claude Code follows along — no manual `/theme light` or `/theme dark` needed.
 
+## Prerequisites
+
+- macOS 14+
+- [mise](https://mise.jdx.dev/) — install with `brew install mise`
+
 ## Installation
 
 ### From source
@@ -11,7 +16,8 @@ When you toggle between light and dark mode on macOS, Claude Shine updates `~/.c
 ```bash
 git clone https://github.com/skeswa/claude-shine.git
 cd claude-shine
-make install
+mise install
+mise run install
 ```
 
 This builds a Release binary and copies `ClaudeShine.app` to `/Applications/`.
@@ -19,6 +25,15 @@ This builds a Release binary and copies `ClaudeShine.app` to `/Applications/`.
 ### Manual
 
 Download `ClaudeShine.app` from [Releases](https://github.com/skeswa/claude-shine/releases) and drag it to `/Applications/`.
+
+## Development
+
+```bash
+mise run generate    # Generate Xcode project, then open in Xcode
+mise run build       # Build Release binary
+mise run test        # Run test suite
+mise run clean       # Remove build artifacts
+```
 
 ## How it works
 
@@ -39,14 +54,10 @@ The app runs as a menu bar utility with no Dock icon. It uses zero CPU when idle
 ## Uninstall
 
 ```bash
-make uninstall
+mise run uninstall
 ```
 
 Or just quit the app and delete `ClaudeShine.app` from `/Applications/`.
-
-## Requirements
-
-- macOS 14+
 
 ## License
 

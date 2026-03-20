@@ -4,15 +4,18 @@ import Combine
 @Observable
 final class AppearanceMonitor {
     private(set) var currentTheme: Theme
-
+    private let settingsManager: ClaudeSettingsManager
+    private let detectTheme: () -> Theme
     private var cancellable: AnyCancellable?
 
-    init() {
-        // Read initial appearance.
-        currentTheme = Self.detectTheme()
-
-        // Apply on launch.
-        ClaudeSettingsManager.applyTheme(currentTheme)
+    init(
+        settingsManager: ClaudeSettingsManager = ClaudeSettingsManager(),
+        detectTheme: @escaping () -> Theme = AppearanceMonitor.systemTheme
+    ) {
+        self.settingsManager = settingsManager
+        self.detectTheme = detectTheme
+        currentTheme = detectTheme()
+        settingsManager.applyTheme(currentTheme)
 
         // Listen for system appearance changes.
         cancellable = DistributedNotificationCenter.default()
@@ -27,15 +30,15 @@ final class AppearanceMonitor {
             }
     }
 
-    private func refreshTheme() {
-        let newTheme = Self.detectTheme()
+    func refreshTheme() {
+        let newTheme = detectTheme()
         if newTheme != currentTheme {
             currentTheme = newTheme
         }
-        ClaudeSettingsManager.applyTheme(newTheme)
+        settingsManager.applyTheme(newTheme)
     }
 
-    private static func detectTheme() -> Theme {
+    static func systemTheme() -> Theme {
         let appearance = NSApplication.shared.effectiveAppearance
         let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
         return isDark ? .dark : .light

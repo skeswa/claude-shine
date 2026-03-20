@@ -1,0 +1,40 @@
+[tools]
+tuist = "4.162.0"
+
+[tasks.generate]
+description = "Generate Xcode project"
+run = "tuist generate"
+
+[tasks.build]
+description = "Build ClaudeShine.app (Release)"
+depends = ["generate"]
+run = "xcodebuild -project ClaudeShine.xcodeproj -scheme ClaudeShine -configuration Release -derivedDataPath build build"
+
+[tasks.test]
+description = "Run tests"
+depends = ["generate"]
+run = "xcodebuild -project ClaudeShine.xcodeproj -scheme ClaudeShine -configuration Debug -derivedDataPath build test"
+
+[tasks.install]
+description = "Build, install to /Applications, and launch"
+depends = ["build"]
+run = """
+cp -R build/Build/Products/Release/ClaudeShine.app /Applications/ClaudeShine.app
+echo 'Installed to /Applications/ClaudeShine.app'
+open /Applications/ClaudeShine.app
+"""
+
+[tasks.uninstall]
+description = "Quit and remove from /Applications"
+run = """
+osascript -e 'tell application "Claude Shine" to quit' 2>/dev/null || true
+rm -rf /Applications/ClaudeShine.app
+echo 'Uninstalled Claude Shine'
+"""
+
+[tasks.clean]
+description = "Clean build artifacts"
+run = """
+tuist clean
+rm -rf build
+"""
