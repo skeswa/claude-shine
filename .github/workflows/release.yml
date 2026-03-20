@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (e.g. v1.0.0)"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            echo "tag=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: Run tests
+        run: mise run test
+
+      - name: Generate Xcode project
+        run: mise run generate
+
+      - name: Build universal binary
+        run: |
+          xcodebuild \
+            -project ClaudeShine.xcodeproj \
+            -scheme ClaudeShine \
+            -configuration Release \
+            -derivedDataPath build \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            build
+
+      - name: Verify universal binary
+        run: |
+          lipo -info build/Build/Products/Release/ClaudeShine.app/Contents/MacOS/ClaudeShine
+
+      - name: Create zip
+        run: |
+          ditto -c -k --keepParent \
+            build/Build/Products/Release/ClaudeShine.app \
+            ClaudeShine.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          files: ClaudeShine.zip
+          body: |
+            ## Install
+
+            1. Download **ClaudeShine.zip** below
+            2. Unzip and move `ClaudeShine.app` to `/Applications`
+            3. **First launch:** right-click the app → **Open** (required once for unsigned apps)
+
+            > **Tip:** If macOS still blocks the app, run:
+            > ```
+            > xattr -cr /Applications/ClaudeShine.app
+            > ```
+            > then open normally.

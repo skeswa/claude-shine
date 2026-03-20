@@ -40,9 +40,14 @@ config — just install and forget.
 
 ### Download
 
-Grab `ClaudeShine.app` from
-[Releases](https://github.com/skeswa/claude-shine/releases) and drop it in
-`/Applications`.
+1. Grab **ClaudeShine.zip** from the
+   [latest release](https://github.com/skeswa/claude-shine/releases/latest)
+2. Unzip and move `ClaudeShine.app` to `/Applications`
+3. **First launch:** right-click the app → **Open** (required once for unsigned
+   apps)
+
+> **Tip:** If macOS still blocks the app, run
+> `xattr -cr /Applications/ClaudeShine.app` then open normally.
 
 ### Build from source
 
