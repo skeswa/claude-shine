@@ -37,7 +37,8 @@ struct ClaudeShineApp: App {
         } label: {
             Image(
                 systemName: monitor.currentTheme == .dark
-                    ? "moon.fill" : "sun.max.fill")
+                    ? "moon.fill" : "sun.max.fill"
+            )
         }
         .menuBarExtraStyle(.menu)
     }

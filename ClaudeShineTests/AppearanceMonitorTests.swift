@@ -1,6 +1,5 @@
-import XCTest
-
 @testable import ClaudeShine
+import XCTest
 
 final class AppearanceMonitorTests: XCTestCase {
     private var tempDirectory: URL!
@@ -11,7 +10,8 @@ final class AppearanceMonitorTests: XCTestCase {
         tempDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent("ClaudeShineTests-\(UUID().uuidString)")
         settingsManager = ClaudeSettingsManager(
-            settingsDirectoryURL: tempDirectory)
+            settingsDirectoryURL: tempDirectory
+        )
     }
 
     override func tearDown() {
@@ -28,7 +28,7 @@ final class AppearanceMonitorTests: XCTestCase {
 
     // MARK: - Use Case: App launch detects and applies current theme
 
-    func test_init_detectsCurrentTheme_andWritesSettingsFile() throws {
+    func test_init_detectsCurrentTheme_andWritesSettingsFile() {
         let monitor = AppearanceMonitor(
             settingsManager: settingsManager,
             detectTheme: { .light }
@@ -37,7 +37,9 @@ final class AppearanceMonitorTests: XCTestCase {
         XCTAssertEqual(monitor.currentTheme, .light)
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: settingsManager.settingsFileURL.path))
+                atPath: settingsManager.settingsFileURL.path
+            )
+        )
     }
 
     func test_init_appliesDarkTheme_whenDetectorReturnsDark() throws {
@@ -117,7 +119,8 @@ final class AppearanceMonitorTests: XCTestCase {
         // Tamper with the file to set a different theme value.
         let data = try JSONSerialization.data(
             withJSONObject: ["theme": "dark"],
-            options: [.prettyPrinted, .sortedKeys])
+            options: [.prettyPrinted, .sortedKeys]
+        )
         try data.write(to: settingsManager.settingsFileURL, options: .atomic)
 
         let before = try readSettings()

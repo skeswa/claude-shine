@@ -1,6 +1,5 @@
-import XCTest
-
 @testable import ClaudeShine
+import XCTest
 
 final class ClaudeSettingsManagerTests: XCTestCase {
     private var tempDirectory: URL!
@@ -27,17 +26,21 @@ final class ClaudeSettingsManagerTests: XCTestCase {
 
     private func writeSettings(_ settings: [String: Any]) throws {
         try FileManager.default.createDirectory(
-            at: tempDirectory, withIntermediateDirectories: true)
+            at: tempDirectory, withIntermediateDirectories: true
+        )
         let data = try JSONSerialization.data(
-            withJSONObject: settings, options: [.prettyPrinted, .sortedKeys])
+            withJSONObject: settings, options: [.prettyPrinted, .sortedKeys]
+        )
         try data.write(to: manager.settingsFileURL)
     }
 
     private func writeRawData(_ string: String) throws {
         try FileManager.default.createDirectory(
-            at: tempDirectory, withIntermediateDirectories: true)
+            at: tempDirectory, withIntermediateDirectories: true
+        )
         try string.write(
-            to: manager.settingsFileURL, atomically: true, encoding: .utf8)
+            to: manager.settingsFileURL, atomically: true, encoding: .utf8
+        )
     }
 
     // MARK: - Use Case: First launch (clean slate)
@@ -46,10 +49,13 @@ final class ClaudeSettingsManagerTests: XCTestCase {
         manager.applyTheme(.light)
 
         XCTAssertTrue(
-            FileManager.default.fileExists(atPath: tempDirectory.path))
+            FileManager.default.fileExists(atPath: tempDirectory.path)
+        )
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: manager.settingsFileURL.path))
+                atPath: manager.settingsFileURL.path
+            )
+        )
     }
 
     func test_firstLaunch_setsLightTheme_whenSystemIsLight() throws {
@@ -94,16 +100,21 @@ final class ClaudeSettingsManagerTests: XCTestCase {
         throws
     {
         try FileManager.default.createDirectory(
-            at: tempDirectory, withIntermediateDirectories: true)
+            at: tempDirectory, withIntermediateDirectories: true
+        )
         XCTAssertFalse(
             FileManager.default.fileExists(
-                atPath: manager.settingsFileURL.path))
+                atPath: manager.settingsFileURL.path
+            )
+        )
 
         manager.applyTheme(.light)
 
         XCTAssertTrue(
             FileManager.default.fileExists(
-                atPath: manager.settingsFileURL.path))
+                atPath: manager.settingsFileURL.path
+            )
+        )
         let settings = try readSettings()
         XCTAssertEqual(settings["theme"] as? String, "light")
     }
@@ -127,7 +138,7 @@ final class ClaudeSettingsManagerTests: XCTestCase {
     }
 
     func test_themeSwitch_rapidToggles_finalStateIsCorrect() throws {
-        for _ in 0..<10 {
+        for _ in 0 ..< 10 {
             manager.applyTheme(.light)
             manager.applyTheme(.dark)
         }
@@ -143,8 +154,9 @@ final class ClaudeSettingsManagerTests: XCTestCase {
         manager.applyTheme(.dark)
 
         let attrs1 = try FileManager.default.attributesOfItem(
-            atPath: manager.settingsFileURL.path)
-        let modDate1 = attrs1[.modificationDate] as! Date
+            atPath: manager.settingsFileURL.path
+        )
+        let modDate1 = try XCTUnwrap(attrs1[.modificationDate] as? Date)
 
         // Small delay to ensure file system timestamp would differ.
         Thread.sleep(forTimeInterval: 1.0)
@@ -152,12 +164,14 @@ final class ClaudeSettingsManagerTests: XCTestCase {
         manager.applyTheme(.dark)
 
         let attrs2 = try FileManager.default.attributesOfItem(
-            atPath: manager.settingsFileURL.path)
-        let modDate2 = attrs2[.modificationDate] as! Date
+            atPath: manager.settingsFileURL.path
+        )
+        let modDate2 = try XCTUnwrap(attrs2[.modificationDate] as? Date)
 
         XCTAssertEqual(
             modDate1, modDate2,
-            "File should not be rewritten when theme already matches")
+            "File should not be rewritten when theme already matches"
+        )
     }
 
     // MARK: - Use Case: Recovery from corruption
@@ -179,21 +193,24 @@ final class ClaudeSettingsManagerTests: XCTestCase {
         manager.applyTheme(.dark)
 
         let data = try Data(contentsOf: manager.settingsFileURL)
-        let jsonString = String(data: data, encoding: .utf8)!
+        let jsonString = try XCTUnwrap(String(data: data, encoding: .utf8))
 
         // Verify pretty-printed (contains newlines and indentation).
         XCTAssertTrue(
-            jsonString.contains("\n"), "JSON should be pretty-printed")
+            jsonString.contains("\n"), "JSON should be pretty-printed"
+        )
 
         // Verify sorted keys: "alpha" before "beta" before "theme".
-        let alphaRange = jsonString.range(of: "\"alpha\"")!
-        let betaRange = jsonString.range(of: "\"beta\"")!
-        let themeRange = jsonString.range(of: "\"theme\"")!
+        let alphaRange = try XCTUnwrap(jsonString.range(of: "\"alpha\""))
+        let betaRange = try XCTUnwrap(jsonString.range(of: "\"beta\""))
+        let themeRange = try XCTUnwrap(jsonString.range(of: "\"theme\""))
         XCTAssertTrue(
             alphaRange.lowerBound < betaRange.lowerBound,
-            "Keys should be sorted: alpha before beta")
+            "Keys should be sorted: alpha before beta"
+        )
         XCTAssertTrue(
             betaRange.lowerBound < themeRange.lowerBound,
-            "Keys should be sorted: beta before theme")
+            "Keys should be sorted: beta before theme"
+        )
     }
 }

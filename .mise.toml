@@ -1,5 +1,7 @@
 [tools]
 tuist = "4.162.0"
+"npm:prettier" = "3.8.1"
+swiftformat = "0.60.1"
 
 [tasks.generate]
 description = "Generate Xcode project"
@@ -30,6 +32,13 @@ run = """
 osascript -e 'tell application "Claude Shine" to quit' 2>/dev/null || true
 rm -rf /Applications/ClaudeShine.app
 echo 'Uninstalled Claude Shine'
+"""
+
+[tasks.fmt]
+description = "Format all source files"
+run = """
+swiftformat ClaudeShine ClaudeShineTests Project.swift Tuist.swift
+prettier --write "**/*.md" "**/*.json" --ignore-path .gitignore
 """
 
 [tasks.clean]

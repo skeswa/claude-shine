@@ -7,7 +7,9 @@ struct ClaudeSettingsManager {
         settingsDirectoryURL.appendingPathComponent("settings.json")
     }
 
-    init(settingsDirectoryURL: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".claude")) {
+    init(settingsDirectoryURL: URL = FileManager.default.homeDirectoryForCurrentUser
+        .appendingPathComponent(".claude"))
+    {
         self.settingsDirectoryURL = settingsDirectoryURL
     }
 
@@ -20,10 +22,12 @@ struct ClaudeSettingsManager {
         if !fileManager.fileExists(atPath: dirURL.path) {
             do {
                 try fileManager.createDirectory(
-                    at: dirURL, withIntermediateDirectories: true)
+                    at: dirURL, withIntermediateDirectories: true
+                )
             } catch {
                 print(
-                    "[ClaudeShine] Failed to create \(dirURL.path): \(error)")
+                    "[ClaudeShine] Failed to create \(dirURL.path): \(error)"
+                )
                 return
             }
         }
@@ -31,7 +35,7 @@ struct ClaudeSettingsManager {
         // Read existing settings or start fresh.
         var settings: [String: Any] = [:]
         if let data = try? Data(contentsOf: fileURL),
-            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         {
             settings = json
         }

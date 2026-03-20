@@ -4,7 +4,8 @@
 
 # Claude Shine
 
-**Automatic dark mode for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).**
+**Automatic dark mode for
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code).**
 
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-black?style=flat-square&logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
@@ -14,9 +15,13 @@
 
 ---
 
-Claude Code doesn't follow your system appearance. Every time you toggle dark mode on macOS, you have to manually type `/theme light` or `/theme dark`. Claude Shine fixes that.
+Claude Code doesn't follow your system appearance. Every time you toggle dark
+mode on macOS, you have to manually type `/theme light` or `/theme dark`. Claude
+Shine fixes that.
 
-It sits in your menu bar, watches for appearance changes, and updates `~/.claude/settings.json` instantly. No polling, no CPU usage when idle, no config — just install and forget.
+It sits in your menu bar, watches for appearance changes, and updates
+`~/.claude/settings.json` instantly. No polling, no CPU usage when idle, no
+config — just install and forget.
 
 ## Features
 
@@ -31,7 +36,9 @@ It sits in your menu bar, watches for appearance changes, and updates `~/.claude
 
 ### Download
 
-Grab `ClaudeShine.app` from [Releases](https://github.com/skeswa/claude-shine/releases) and drop it in `/Applications`.
+Grab `ClaudeShine.app` from
+[Releases](https://github.com/skeswa/claude-shine/releases) and drop it in
+`/Applications`.
 
 ### Build from source
 
@@ -57,14 +64,15 @@ flowchart TD
     E --> F["Write atomically (tmp + rename)"]
 ```
 
-The entire app is ~200 lines of Swift. Four files, no dependencies, no frameworks beyond AppKit and SwiftUI.
+The entire app is ~200 lines of Swift. Four files, no dependencies, no
+frameworks beyond AppKit and SwiftUI.
 
-| Component | Responsibility |
-|---|---|
-| `AppearanceMonitor` | Subscribes to system notifications, detects theme |
-| `ClaudeSettingsManager` | Reads/writes `settings.json` atomically |
-| `Theme` | `light` / `dark` enum |
-| `ClaudeShineApp` | Menu bar UI, Launch at Login toggle |
+| Component               | Responsibility                                    |
+| ----------------------- | ------------------------------------------------- |
+| `AppearanceMonitor`     | Subscribes to system notifications, detects theme |
+| `ClaudeSettingsManager` | Reads/writes `settings.json` atomically           |
+| `Theme`                 | `light` / `dark` enum                             |
+| `ClaudeShineApp`        | Menu bar UI, Launch at Login toggle               |
 
 ## Development
 
@@ -75,7 +83,10 @@ mise run test        # Run 19 unit tests
 mise run clean       # Remove build artifacts
 ```
 
-The project uses [Tuist](https://tuist.dev) for declarative Xcode project generation — no `.xcodeproj` checked into the repo. All dependencies are injected, so the full test suite runs without touching the real filesystem or system APIs.
+The project uses [Tuist](https://tuist.dev) for declarative Xcode project
+generation — no `.xcodeproj` checked into the repo. All dependencies are
+injected, so the full test suite runs without touching the real filesystem or
+system APIs.
 
 ## Uninstall
 
