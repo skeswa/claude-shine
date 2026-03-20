@@ -1,55 +1,81 @@
+<div align="center">
+
+<img src="logo.png" width="200" alt="Claude Shine app icon" />
+
 # Claude Shine
 
-A lightweight macOS menu bar utility that automatically syncs [Claude Code](https://claude.ai/)'s theme with your system appearance.
+**Automatic dark mode for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).**
 
-When you toggle between light and dark mode on macOS, Claude Shine updates `~/.claude/settings.json` so Claude Code follows along — no manual `/theme light` or `/theme dark` needed.
+[![macOS 14+](https://img.shields.io/badge/macOS-14%2B-black?style=flat-square&logo=apple&logoColor=white)](https://www.apple.com/macos/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Built with Tuist](https://img.shields.io/badge/built_with-Tuist-blueviolet?style=flat-square)](https://tuist.dev)
 
-## Prerequisites
+</div>
 
-- macOS 14+
-- [mise](https://mise.jdx.dev/) — install with `brew install mise`
+---
 
-## Installation
+Claude Code doesn't follow your system appearance. Every time you toggle dark mode on macOS, you have to manually type `/theme light` or `/theme dark`. Claude Shine fixes that.
 
-### From source
+It sits in your menu bar, watches for appearance changes, and updates `~/.claude/settings.json` instantly. No polling, no CPU usage when idle, no config — just install and forget.
+
+## Features
+
+- **Instant sync** — theme updates the moment macOS appearance changes
+- **Zero overhead** — notification-driven, not polled; uses no CPU when idle
+- **Menu bar native** — sun/moon icon reflects current theme; no Dock icon
+- **Launch at Login** — one-click toggle in the menu bar dropdown
+- **Non-destructive** — preserves all existing settings in `settings.json`
+- **Atomic writes** — temp file + rename prevents corruption, even on crash
+
+## Install
+
+### Download
+
+Grab `ClaudeShine.app` from [Releases](https://github.com/skeswa/claude-shine/releases) and drop it in `/Applications`.
+
+### Build from source
+
+Requires [mise](https://mise.jdx.dev/) (`brew install mise`).
 
 ```bash
 git clone https://github.com/skeswa/claude-shine.git
 cd claude-shine
-mise install
+mise install   # installs Tuist
 mise run install
 ```
 
-This builds a Release binary and copies `ClaudeShine.app` to `/Applications/`.
+This builds a Release binary and copies `ClaudeShine.app` to `/Applications`.
 
-### Manual
+## How it works
 
-Download `ClaudeShine.app` from [Releases](https://github.com/skeswa/claude-shine/releases) and drag it to `/Applications/`.
+```mermaid
+flowchart TD
+    A["macOS appearance changes"] --> B["DistributedNotificationCenter"]
+    B --> C["Detect new theme"]
+    C --> D["Read ~/.claude/settings.json"]
+    D --> E["Update theme key"]
+    E --> F["Write atomically (tmp + rename)"]
+```
+
+The entire app is ~200 lines of Swift. Four files, no dependencies, no frameworks beyond AppKit and SwiftUI.
+
+| Component | Responsibility |
+|---|---|
+| `AppearanceMonitor` | Subscribes to system notifications, detects theme |
+| `ClaudeSettingsManager` | Reads/writes `settings.json` atomically |
+| `Theme` | `light` / `dark` enum |
+| `ClaudeShineApp` | Menu bar UI, Launch at Login toggle |
 
 ## Development
 
 ```bash
-mise run generate    # Generate Xcode project, then open in Xcode
-mise run build       # Build Release binary
-mise run test        # Run test suite
+mise run generate    # Generate Xcode project
+mise run build       # Release build
+mise run test        # Run 19 unit tests
 mise run clean       # Remove build artifacts
 ```
 
-## How it works
-
-1. On launch, reads the current macOS appearance (light or dark)
-2. Listens for `AppleInterfaceThemeChangedNotification` via `DistributedNotificationCenter`
-3. Updates the `"theme"` key in `~/.claude/settings.json` whenever the appearance changes
-4. Writes atomically (temp file + rename) to avoid corrupting the settings file
-
-The app runs as a menu bar utility with no Dock icon. It uses zero CPU when idle — theme changes are notification-driven, not polled.
-
-## Menu bar
-
-- **Icon:** Sun (light mode) or Moon (dark mode)
-- **Current theme** label
-- **Launch at Login** toggle
-- **Quit**
+The project uses [Tuist](https://tuist.dev) for declarative Xcode project generation — no `.xcodeproj` checked into the repo. All dependencies are injected, so the full test suite runs without touching the real filesystem or system APIs.
 
 ## Uninstall
 
@@ -57,7 +83,7 @@ The app runs as a menu bar utility with no Dock icon. It uses zero CPU when idle
 mise run uninstall
 ```
 
-Or just quit the app and delete `ClaudeShine.app` from `/Applications/`.
+Or quit the app and delete it from `/Applications`.
 
 ## License
 
