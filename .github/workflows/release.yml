@@ -25,8 +25,11 @@ jobs:
         run: |
           if [[ -n "${{ github.event.inputs.version }}" ]]; then
             echo "tag=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
+          elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
             echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::No version input provided and GITHUB_REF ($GITHUB_REF) is not a tag. Either push a v* tag or provide a version input."
+            exit 1
           fi
 
       - name: Install mise
